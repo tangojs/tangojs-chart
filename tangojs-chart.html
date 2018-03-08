@@ -1,0 +1,114 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<link rel="import" href="../highcharts-chart/highcharts-chart.html">
+<script src="node_modules/tangojs-web-components/dist/tangojs-web-components.js"></script>
+
+<dom-module id="tangojs-chart">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello world [[prop1]]!</h2>
+    <highcharts-chart
+      type="{{ type }}"
+      title='[[info.name]]'
+      x-zoom
+      x-label="Iterations"
+      y-label="[[info.label]]"
+      data="[[value]]"
+      series="[[formatData(value)]]"
+      >
+      </highcharts-chart>
+
+  </template>
+
+  <script>
+    /**
+     * `tangojs-chart`
+     * TangoJS chart
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TangojsChart extends tangojs.web.util.mixins.withTangoAttribute(Polymer.Element) {
+      static get is() { return 'tangojs-chart'; }
+      static get properties() {
+        return {
+          type: {
+            type: String,
+            value: 'spline',
+	    observer: 'updateType'
+          }
+        };
+      }
+
+      updateValue(value){
+	super.updateValue(value)
+      }
+
+      infoChanged(info){
+	super.infoChanged(info)
+        this.updateFormatType(info)
+      }
+
+      updateFormatType(info){
+        this.type = this.getFormatFromAttributeInfo(info)
+	console.log(this.type)
+      }
+
+      getFormatFromAttributeInfo (info) {
+        const DF = window.tangojs.core.tango.AttrDataFormat
+
+        switch (info.data_format) {
+          case DF.SCALAR: 
+          case DF.SPECTRUM: return 'spline'
+          case DF.IMAGE: return 'heatmap'
+          default: return undefined
+        }
+      }
+
+      formatData(value){
+        const DF = window.tangojs.core.tango.AttrDataFormat
+
+        switch (this.info.data_format) {
+          case DF.SCALAR: return value
+          case DF.SPECTRUM: return value
+          case DF.IMAGE:
+            return [
+               {
+                "name": "Sales per employee",
+                "borderWidth": 1,
+                "data": [[0, 0, 1], 
+                  [0,1,3], 
+                  [0,2,5], 
+                  [0,3,2],
+                  [1,0,1],
+                  [1,1,5],
+                  [1,2,8],
+                  [1,3,2],
+		  ]
+	       }
+	    ]
+          default: return undefined
+        }
+      }
+
+      formatLayout(info){
+        return { 
+          "title": info.label,
+          "legend": {
+            "x": 0
+            },
+          "hovermode": "closest",
+          "margin": { "b":0 }
+        }
+      }
+    }
+
+
+    window.customElements.define(TangojsChart.is, TangojsChart);
+  </script>
+</dom-module>
