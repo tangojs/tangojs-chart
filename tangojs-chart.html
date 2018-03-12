@@ -12,19 +12,25 @@
     </style>
     <h2>Hello world [[prop1]]!</h2>
     <highcharts-chart
-      type="{{ type }}"
+      id="chart"
+      vsTime="[[trend]]"
       title='[[info.name]]'
       x-zoom
       x-label="Iterations"
       y-label="[[info.label]]"
-      data="[[value]]"
-      series="[[formatData(value)]]"
+      type="{{ type }}"
+      series="[ {
+                "name": "[[info.description]]",
+                "borderWidth": 1,
+                "data": "[[ value ]]"
+	       }]"
       >
       </highcharts-chart>
 
   </template>
 
   <script>
+    const DF = window.tangojs.core.tango.AttrDataFormat
     /**
      * `tangojs-chart`
      * TangoJS chart
@@ -41,12 +47,13 @@
             type: String,
             value: 'spline',
 	    observer: 'updateType'
+          },
+          trend: {
+            type: Boolean,
+            value: false,
+	    observer: 'updateTrend'
           }
         };
-      }
-
-      updateValue(value){
-	super.updateValue(value)
       }
 
       infoChanged(info){
@@ -55,43 +62,46 @@
       }
 
       updateFormatType(info){
-        this.type = this.getFormatFromAttributeInfo(info)
-	console.log(this.type)
-      }
-
-      getFormatFromAttributeInfo (info) {
-        const DF = window.tangojs.core.tango.AttrDataFormat
-
         switch (info.data_format) {
-          case DF.SCALAR: 
-          case DF.SPECTRUM: return 'spline'
-          case DF.IMAGE: return 'heatmap'
-          default: return undefined
+          case DF.SCALAR:
+	    this.setProperties({type: 'spline', trend: true})
+            break
+          case DF.SPECTRUM:
+	    this.setProperties({type: 'spline', trend: false})
+            break
+          case DF.IMAGE:
+	    console.warn("Image attribute is experimental")
+	    this.setProperties({type: 'heatmap', trend: false})
+            break
+          default:
+	    break
         }
       }
 
-      formatData(value){
-        const DF = window.tangojs.core.tango.AttrDataFormat
-
+      updateValue(data){
+        console.log(data.value)
         switch (this.info.data_format) {
-          case DF.SCALAR: return value
-          case DF.SPECTRUM: return value
+          case DF.SCALAR:
+	    this.$.chart.addData(data.timestamp,data.value,0,false)
+            break
+          case DF.SPECTRUM:
+	    this.$.chart.setData(data.value)
+            break
+
           case DF.IMAGE:
-            return [
+	    console.log(this.$.chart)
+	    this.$.chart._chart.type = "heatmap"
+	    this.$.chart.setData(data.value)
+	    //this.$.chart.updateSeries("data", data.value, 0)
+
+	    this.$.chart._chart.series = [
                {
                 "name": "Sales per employee",
                 "borderWidth": 1,
-                "data": [[0, 0, 1], 
-                  [0,1,3], 
-                  [0,2,5], 
-                  [0,3,2],
-                  [1,0,1],
-                  [1,1,5],
-                  [1,2,8],
-                  [1,3,2],
-		  ]
-	       }
-	    ]
+                "data": data.value
+	       }]
+            break
+	    
           default: return undefined
         }
       }
