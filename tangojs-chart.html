@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
 
+<link rel="import" href="../tangojs-polymer/with-tango-attribute.html">
 <link rel="import" href="../highcharts-chart/highcharts-chart.html">
-<script src="node_modules/tangojs-web-components/dist/tangojs-web-components.js"></script>
 
 <dom-module id="tangojs-chart">
   <template>
@@ -39,7 +39,7 @@
      * @polymer
      * @demo demo/index.html
      */
-    class TangojsChart extends tangojs.web.util.mixins.withTangoAttribute(Polymer.Element) {
+    class TangojsChart extends Tangojs.withTangoAttribute(Polymer.Element) {
       static get is() { return 'tangojs-chart'; }
       static get properties() {
         return {
