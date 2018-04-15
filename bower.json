@@ -1,9 +1,21 @@
 {
   "name": "tangojs-chart",
+  "version": "0.1.0",
   "description": "TangoJS chart",
+  "authors": [
+    "Vincent Hardion <vincent.hardion@maxiv.lu.se>"
+  ],
+  "keywords": [
+    "web-component",
+    "polymer",
+    "tangojs"
+  ],
+  "license": "https://raw.githubusercontent.com/tangojs/tangojs-chart/master/LICENSE",
+  "homepage": "https://github.com/tangojs/tangojs-chart/",
   "main": "tangojs-chart.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
+    "tangojs-polymer": "^0.1.0",
     "highcharts-chart": "^2.0.1"
   },
   "devDependencies": {
